@@ -58,7 +58,7 @@ namespace OcularDLLProxy {
 		}
 
 		// Get our filename
-		_wsplitpath(path, NULL, NULL, filename, NULL);
+		_wsplitpath_s(path, NULL, NULL, NULL, NULL, filename, FILENAME_MAX, NULL, NULL);
 
 		// Get the system directory.
 		if (GetSystemDirectoryW(buffer, MAX_PATH) != 0) {
