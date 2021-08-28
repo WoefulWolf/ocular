@@ -27,8 +27,8 @@ git clone --recursive --recurse-submodules https://github.com/WoefulWolf/ocular/
 ```
 
 ## Installation
-1. Install necessary [dependencies](https://github.com/WoefulWolf/ocular/#dependencies).
-2. [Clone](https://github.com/WoefulWolf/ocular/#cloning) the repository.
+1. [Clone](https://github.com/WoefulWolf/ocular/#cloning) the repository.
+2. Install necessary [dependencies](https://github.com/WoefulWolf/ocular/#dependencies).
 3. Move the following files up one directory from `ocular/imgui/backends/` to `ocular/imgui/`:
 ```
 imgui_impl_dx11.cpp
@@ -42,6 +42,18 @@ imgui_impl_win32.h
 #define KIERO_USE_MINHOOK    1
 ```
 5. `#include` `ocular/ocular.h` and/or `ocular/DLLProxy.h` in your project!
+
+## Important Notes
+This is still very early in development. A lot of it is a bit spaghetti.
+It is actually taken from another WIP project, but I thought this might be handy to have here to use in other projects.
+I have tested very few games thus far, and I am certain some will not work.
+Some games that I have tested that work include;
+ * NieR:Automata
+ * NieR Replicant ver.1.22474487139
+ * Dark Souls III
+ * Factorio
+ * Final Fantasy XIV - A Realm Reborn
+ * Kenshi
 
 ## Usage Example
 ```c++
@@ -79,7 +91,7 @@ BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved) {
     case DLL_PROCESS_ATTACH:
         DisableThreadLibraryCalls(hMod);
         CreateThread(nullptr, 0, MainThread, hMod, 0, nullptr);
-        Sleep(1000);  // Not necessarily required, but lets sleep to allow everything to be setup.
+        Sleep(1000);  // Not necessarily required, but let's sleep to allow everything to be setup.
         break;
     case DLL_PROCESS_DETACH:
         Ocular::Shutdown();
@@ -94,6 +106,7 @@ After building the DLL, rename the file to one of the supported [DLL proxies](ht
 ![Example of ImGui Window](https://i.imgur.com/NpRoK55.png)
 
 ## Visual Studio Tips For Newbies
+ * Make sure you are building a Dynamic Library (.dll)!
  * Here is a list of the minimum files to *"Include In Project"*:
 ```
 ocular/ocular.h
