@@ -20,7 +20,7 @@ namespace OcularDLLProxy {
 		GetModuleFileNameFailure = -2,
 		LoadLibraryWFailure = -3,
 		DLLFilenameNotRecognized = -4,
-		GetSystemDirectoryWFailure = -4,
+		GetSystemDirectoryWFailure = -5,
 
 		Success = 0,
 	};
