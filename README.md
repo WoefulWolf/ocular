@@ -59,7 +59,7 @@ void ConsoleSetup() {
 
 // Our custom GUI function, gets run every frame (You can include ImGui functions).
 void OurCustomRenderFunction() {
-    ImGui::Begin("ocular")
+    ImGui::Begin("ocular");
     ImGui::Text("Hello World!");
     ImGui::End();
 }
