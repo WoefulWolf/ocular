@@ -27,7 +27,7 @@ git clone --recursive --recurse-submodules https://github.com/WoefulWolf/ocular/
 ```
 
 ## Installation
-1. Install necessary [dependencies](https://github.com/WoefulWolf/ocular/#dependencies) (remember to include/add them, e.g. <br> `%programfiles(x86)%/Microsoft DirectX SDK (June 2010)/Include/` <br> `%programfiles(x86)%/Microsoft DirectX SDK (June 2010)/Lib/`).
+1. Install necessary [dependencies](https://github.com/WoefulWolf/ocular/#dependencies).
 2. [Clone](https://github.com/WoefulWolf/ocular/#cloning) the repository.
 3. Move the following files up one directory from `ocular/imgui/backends/` to `ocular/imgui/`:
 ```
@@ -52,9 +52,9 @@ imgui_impl_win32.h
 // Just so we can see some logs and output.
 void ConsoleSetup() {
     AllocConsole();
-    freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
-    freopen("CONIN$", "r", stdin);
+    freopen_s((FILE**)stdout, "CONOUT$", "w", stdout);
+    freopen_s((FILE**)stdout, "CONOUT$", "w", stderr);
+    freopen_s((FILE**)stdout, "CONOUT$", "r", stdin);
 }
 
 // Our custom GUI function, gets run every frame (You can include ImGui functions).
@@ -90,3 +90,5 @@ BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved) {
 
 ```
 After building the DLL, rename the file to one of the supported [DLL proxies](https://github.com/WoefulWolf/ocular/#supports) and place it adjacent to your game's executable.
+
+![Example of ImGui Window](https://i.imgur.com/NpRoK55.png)
