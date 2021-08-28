@@ -92,3 +92,20 @@ BOOL WINAPI DllMain(HMODULE hMod, DWORD dwReason, LPVOID lpReserved) {
 After building the DLL, rename the file to one of the supported [DLL proxies](https://github.com/WoefulWolf/ocular/#supports) and place it adjacent to your game's executable.
 
 ![Example of ImGui Window](https://i.imgur.com/NpRoK55.png)
+
+## Visual Studio Tips For Newbies
+ * Here is a list of the minimum files to *"Include In Project"*:
+```
+ocular/ocular.h
+ocular/ocular.cpp
+ocular/DLLProxy.h
+
+ocular/hooks/                      // Entire direcory.
+ocular/imgui/                      // All source files inside EXCLUDING sub-directories.
+
+ocular/kiero/kiero.h
+ocular/kiero/kiero.cpp
+ocular/kiero/minhook/include/      // Entire direcory.
+ocular/kiero/minhook/scr/          // Entire direcory.
+```
+ * A handy extension I like: https://github.com/reloZid/vc-fileutils
