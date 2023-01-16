@@ -10,6 +10,7 @@ A Simple DX11 Hooking Library using <a href="https://github.com/microsoft/Detour
 * Windows SDK
 
 ## Usage
+(I recommend building yourself using the VS solution/project provided, but `.lib` files can be found in [Releases](https://github.com/WoefulWolf/ocular/releases))
 * Add `ocular/include/` as an additional include directory.
 * Add `ocular.lib` to your linker input.
 * `#include <ocular.h>`
