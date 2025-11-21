@@ -55,6 +55,5 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 ```
 
 ## Please Note
-* This is not done, not even close to all the DX11 methods have been implemented, I'm adding them as I need them for projects. You are welcome to add others and make a pull request.
 * See `ocular::VMT` for currently implemented methods.
 * The main priority of the library is simplicity of use, which can sometimes be to the code's detriment.
