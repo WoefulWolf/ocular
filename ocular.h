@@ -3,48 +3,295 @@
 #include <d3d11.h>
 #include <unordered_map>
 
+#define OCULAR_DEVICE_OFFSET 0x100
+#define OCULAR_CONTEXT_OFFSET 0x200
+
 namespace ocular {
-	namespace SwapChain {
-		typedef HRESULT(__stdcall* QUERYINTERFACE) (IDXGISwapChain* pSwapChain, REFIID riid, void** ppvObject);
-		typedef ULONG(__stdcall* ADDREF) (IDXGISwapChain* pSwapChain);
-		typedef ULONG(__stdcall* RELEASE) (IDXGISwapChain* pSwapChain);
-		typedef HRESULT(__stdcall* SETPRIVATEDATA) (IDXGISwapChain* pSwapChain, REFGUID Name, UINT DataSize, const void* pData);
-		typedef HRESULT(__stdcall* SETPRIVATEDATAINTERFACE) (IDXGISwapChain* pSwapChain, REFGUID Name, const IUnknown* pUnknown);
-		typedef HRESULT(__stdcall* GETPRIVATEDATA) (IDXGISwapChain* pSwapChain, REFGUID Name, UINT DataSize, void* pData);
-		typedef HRESULT(__stdcall* GETPARENT) (IDXGISwapChain* pSwapChain, REFIID riid, void** ppParent);
-		typedef HRESULT(__stdcall* GETDEVICE) (IDXGISwapChain* pSwapChain, REFIID riid, void** ppDevice);
-		typedef HRESULT(__stdcall* PRESENT) (IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags);
-
-		typedef HRESULT(__stdcall* RESIZEBUFFERS) (IDXGISwapChain* pSwapChain, UINT BufferCount, UINT Width, UINT Height, DXGI_FORMAT NewFormat, UINT SwapChainFlags);
-	}
-
-	namespace Context {
-		typedef void(__stdcall* OMSETRENDERTARGETS) (ID3D11DeviceContext* pContext, UINT NumViews, ID3D11RenderTargetView* const* ppRenderTargetViews, ID3D11DepthStencilView* pDepthStencilView);
-		typedef void(__stdcall* CLEARDEPTHSTENCILVIEW) (ID3D11DeviceContext* pContext, ID3D11DepthStencilView* pDepthStencilView, UINT ClearFlags, FLOAT Depth, UINT8 Stencil);
-	}
-
 	enum class VMT {
-		// SwapChain
-		QueryInterface = 0,
-		AddRef = 1,
-		Release = 2,
-		SetPrivateData = 3,
-		SetPrivateDataInterface = 4,
-		GetPrivateData = 5,
-		GetParent = 6,
-		GetDevice = 7,
-		Present = 8,
+		// SwapChain (IDXGISwapChain)
+		SC_QueryInterface = 0,
+		SC_AddRef = 1,
+		SC_Release = 2,
+		SC_SetPrivateData = 3,
+		SC_SetPrivateDataInterface = 4,
+		SC_GetPrivateData = 5,
+		SC_GetParent = 6,
+		SC_GetDevice = 7,
+		SC_Present = 8,
+		SC_GetBuffer = 9,
+		SC_SetFullscreenState = 10,
+		SC_GetFullscreenState = 11,
+		SC_GetDesc = 12,
+		SC_ResizeBuffers = 13,
+		SC_ResizeTarget = 14,
+		SC_GetContainingOutput = 15,
+		SC_GetFrameStatistics = 16,
+		SC_GetLastPresentCount = 17,
 
-		ResizeBuffers = 13,
+		// SwapChain1 (IDXGISwapChain1)
+		SC_GetDesc1 = 18,
+		SC_GetFullscreenDesc = 19,
+		SC_GetHwnd = 20,
+		SC_GetCoreWindow = 21,
+		SC_Present1 = 22,
+		SC_IsTemporaryMonoSupported = 23,
+		SC_GetRestrictToOutput = 24,
+		SC_SetBackgroundColor = 25,
+		SC_GetBackgroundColor = 26,
+		SC_SetRotation = 27,
+		SC_GetRotation = 28,
 
-		// Device
+		// SwapChain2 (IDXGISwapChain2)
+		SC_SetSourceSize = 29,
+		SC_GetSourceSize = 30,
+		SC_SetMaximumFrameLatency = 31,
+		SC_GetMaximumFrameLatency = 32,
+		SC_GetFrameLatencyWaitableObject = 33,
+		SC_SetMatrixTransform = 34,
+		SC_GetMatrixTransform = 35,
 
-		// Context
-		OMSetRenderTargets = 0x200 + 33,
-		ClearDepthStencilView = 0x200 + 53
+		// SwapChain3 (IDXGISwapChain3)
+		SC_GetCurrentBackBufferIndex = 36,
+		SC_CheckColorSpaceSupport = 37,
+		SC_SetColorSpace1 = 38,
+		SC_ResizeBuffers1 = 39,
+
+		// SwapChain4 (IDXGISwapChain4)
+		SC_SetHDRMetaData = 40,
+
+		// Device (ID3D11Device)
+		D_QueryInterface = OCULAR_DEVICE_OFFSET + 0,
+		D_AddRef = OCULAR_DEVICE_OFFSET + 1,
+		D_Release = OCULAR_DEVICE_OFFSET + 2,
+		D_CreateBuffer = OCULAR_DEVICE_OFFSET + 3,
+		D_CreateTexture1D = OCULAR_DEVICE_OFFSET + 4,
+		D_CreateTexture2D = OCULAR_DEVICE_OFFSET + 5,
+		D_CreateTexture3D = OCULAR_DEVICE_OFFSET + 6,
+		D_CreateShaderResourceView = OCULAR_DEVICE_OFFSET + 7,
+		D_CreateUnorderedAccessView = OCULAR_DEVICE_OFFSET + 8,
+		D_CreateRenderTargetView = OCULAR_DEVICE_OFFSET + 9,
+		D_CreateDepthStencilView = OCULAR_DEVICE_OFFSET + 10,
+		D_CreateInputLayout = OCULAR_DEVICE_OFFSET + 11,
+		D_CreateVertexShader = OCULAR_DEVICE_OFFSET + 12,
+		D_CreateGeometryShader = OCULAR_DEVICE_OFFSET + 13,
+		D_CreateGeometryShaderWithStreamOutput = OCULAR_DEVICE_OFFSET + 14,
+		D_CreatePixelShader = OCULAR_DEVICE_OFFSET + 15,
+		D_CreateHullShader = OCULAR_DEVICE_OFFSET + 16,
+		D_CreateDomainShader = OCULAR_DEVICE_OFFSET + 17,
+		D_CreateComputeShader = OCULAR_DEVICE_OFFSET + 18,
+		D_CreateClassLinkage = OCULAR_DEVICE_OFFSET + 19,
+		D_CreateBlendState = OCULAR_DEVICE_OFFSET + 20,
+		D_CreateDepthStencilState = OCULAR_DEVICE_OFFSET + 21,
+		D_CreateRasterizerState = OCULAR_DEVICE_OFFSET + 22,
+		D_CreateSamplerState = OCULAR_DEVICE_OFFSET + 23,
+		D_CreateQuery = OCULAR_DEVICE_OFFSET + 24,
+		D_CreatePredicate = OCULAR_DEVICE_OFFSET + 25,
+		D_CreateCounter = OCULAR_DEVICE_OFFSET + 26,
+		D_CreateDeferredContext = OCULAR_DEVICE_OFFSET + 27,
+		D_OpenSharedResource = OCULAR_DEVICE_OFFSET + 28,
+		D_CheckFormatSupport = OCULAR_DEVICE_OFFSET + 29,
+		D_CheckMultisampleQualityLevels = OCULAR_DEVICE_OFFSET + 30,
+		D_CheckCounterInfo = OCULAR_DEVICE_OFFSET + 31,
+		D_CheckCounter = OCULAR_DEVICE_OFFSET + 32,
+		D_CheckFeatureSupport = OCULAR_DEVICE_OFFSET + 33,
+		D_GetPrivateData = OCULAR_DEVICE_OFFSET + 34,
+		D_SetPrivateData = OCULAR_DEVICE_OFFSET + 35,
+		D_SetPrivateDataInterface = OCULAR_DEVICE_OFFSET + 36,
+		D_GetFeatureLevel = OCULAR_DEVICE_OFFSET + 37,
+		D_GetCreationFlags = OCULAR_DEVICE_OFFSET + 38,
+		D_GetDeviceRemovedReason = OCULAR_DEVICE_OFFSET + 39,
+		D_GetImmediateContext = OCULAR_DEVICE_OFFSET + 40,
+		D_SetExceptionMode = OCULAR_DEVICE_OFFSET + 41,
+		D_GetExceptionMode = OCULAR_DEVICE_OFFSET + 42,
+
+		// Device1 (ID3D11Device1)
+		D_GetImmediateContext1 = OCULAR_DEVICE_OFFSET + 43,
+		D_CreateDeferredContext1 = OCULAR_DEVICE_OFFSET + 44,
+		D_CreateBlendState1 = OCULAR_DEVICE_OFFSET + 45,
+		D_CreateRasterizerState1 = OCULAR_DEVICE_OFFSET + 46,
+		D_CreateDeviceContextState = OCULAR_DEVICE_OFFSET + 47,
+		D_OpenSharedResource1 = OCULAR_DEVICE_OFFSET + 48,
+		D_OpenSharedResourceByName = OCULAR_DEVICE_OFFSET + 49,
+
+		// Device2 (ID3D11Device2)
+		D_GetImmediateContext2 = OCULAR_DEVICE_OFFSET + 50,
+		D_CreateDeferredContext2 = OCULAR_DEVICE_OFFSET + 51,
+		D_GetResourceTiling = OCULAR_DEVICE_OFFSET + 52,
+		D_CheckMultisampleQualityLevels1 = OCULAR_DEVICE_OFFSET + 53,
+
+		// Device3 (ID3D11Device3)
+		D_CreateTexture2D1 = OCULAR_DEVICE_OFFSET + 54,
+		D_CreateTexture3D1 = OCULAR_DEVICE_OFFSET + 55,
+		D_CreateRasterizerState2 = OCULAR_DEVICE_OFFSET + 56,
+		D_CreateShaderResourceView1 = OCULAR_DEVICE_OFFSET + 57,
+		D_CreateUnorderedAccessView1 = OCULAR_DEVICE_OFFSET + 58,
+		D_CreateRenderTargetView1 = OCULAR_DEVICE_OFFSET + 59,
+		D_CreateQuery1 = OCULAR_DEVICE_OFFSET + 60,
+		D_GetImmediateContext3 = OCULAR_DEVICE_OFFSET + 61,
+		D_CreateDeferredContext3 = OCULAR_DEVICE_OFFSET + 62,
+		D_WriteToSubresource = OCULAR_DEVICE_OFFSET + 63,
+		D_ReadFromSubresource = OCULAR_DEVICE_OFFSET + 64,
+
+		// Device4 (ID3D11Device4)
+		D_RegisterDeviceRemovedEvent = OCULAR_DEVICE_OFFSET + 65,
+		D_UnregisterDeviceRemoved = OCULAR_DEVICE_OFFSET + 66,
+
+		// Context (ID3D11DeviceContext)
+		CTX_VSSetConstantBuffers = OCULAR_CONTEXT_OFFSET + 7,
+		CTX_PSSetShaderResources = OCULAR_CONTEXT_OFFSET + 8,
+		CTX_PSSetShader = OCULAR_CONTEXT_OFFSET + 9,
+		CTX_PSSetSamplers = OCULAR_CONTEXT_OFFSET + 10,
+		CTX_VSSetShader = OCULAR_CONTEXT_OFFSET + 11,
+		CTX_DrawIndexed = OCULAR_CONTEXT_OFFSET + 12,
+		CTX_Draw = OCULAR_CONTEXT_OFFSET + 13,
+		CTX_Map = OCULAR_CONTEXT_OFFSET + 14,
+		CTX_Unmap = OCULAR_CONTEXT_OFFSET + 15,
+		CTX_PSSetConstantBuffers = OCULAR_CONTEXT_OFFSET + 16,
+		CTX_IASetInputLayout = OCULAR_CONTEXT_OFFSET + 17,
+		CTX_IASetVertexBuffers = OCULAR_CONTEXT_OFFSET + 18,
+		CTX_IASetIndexBuffer = OCULAR_CONTEXT_OFFSET + 19,
+		CTX_DrawIndexedInstanced = OCULAR_CONTEXT_OFFSET + 20,
+		CTX_DrawInstanced = OCULAR_CONTEXT_OFFSET + 21,
+		CTX_GSSetConstantBuffers = OCULAR_CONTEXT_OFFSET + 22,
+		CTX_GSSetShader = OCULAR_CONTEXT_OFFSET + 23,
+		CTX_IASetPrimitiveTopology = OCULAR_CONTEXT_OFFSET + 24,
+		CTX_VSSetShaderResources = OCULAR_CONTEXT_OFFSET + 25,
+		CTX_VSSetSamplers = OCULAR_CONTEXT_OFFSET + 26,
+		CTX_Begin = OCULAR_CONTEXT_OFFSET + 27,
+		CTX_End = OCULAR_CONTEXT_OFFSET + 28,
+		CTX_GetData = OCULAR_CONTEXT_OFFSET + 29,
+		CTX_SetPredication = OCULAR_CONTEXT_OFFSET + 30,
+		CTX_GSSetShaderResources = OCULAR_CONTEXT_OFFSET + 31,
+		CTX_GSSetSamplers = OCULAR_CONTEXT_OFFSET + 32,
+		CTX_OMSetRenderTargets = OCULAR_CONTEXT_OFFSET + 33,
+		CTX_OMSetRenderTargetsAndUnorderedAccessViews = OCULAR_CONTEXT_OFFSET + 34,
+		CTX_OMSetBlendState = OCULAR_CONTEXT_OFFSET + 35,
+		CTX_OMSetDepthStencilState = OCULAR_CONTEXT_OFFSET + 36,
+		CTX_SOSetTargets = OCULAR_CONTEXT_OFFSET + 37,
+		CTX_DrawAuto = OCULAR_CONTEXT_OFFSET + 38,
+		CTX_DrawIndexedInstancedIndirect = OCULAR_CONTEXT_OFFSET + 39,
+		CTX_DrawInstancedIndirect = OCULAR_CONTEXT_OFFSET + 40,
+		CTX_Dispatch = OCULAR_CONTEXT_OFFSET + 41,
+		CTX_DispatchIndirect = OCULAR_CONTEXT_OFFSET + 42,
+		CTX_RSSetState = OCULAR_CONTEXT_OFFSET + 43,
+		CTX_RSSetViewports = OCULAR_CONTEXT_OFFSET + 44,
+		CTX_RSSetScissorRects = OCULAR_CONTEXT_OFFSET + 45,
+		CTX_CopySubresourceRegion = OCULAR_CONTEXT_OFFSET + 46,
+		CTX_CopyResource = OCULAR_CONTEXT_OFFSET + 47,
+		CTX_UpdateSubresource = OCULAR_CONTEXT_OFFSET + 48,
+		CTX_CopyStructureCount = OCULAR_CONTEXT_OFFSET + 49,
+		CTX_ClearRenderTargetView = OCULAR_CONTEXT_OFFSET + 50,
+		CTX_ClearUnorderedAccessViewUint = OCULAR_CONTEXT_OFFSET + 51,
+		CTX_ClearUnorderedAccessViewFloat = OCULAR_CONTEXT_OFFSET + 52,
+		CTX_ClearDepthStencilView = OCULAR_CONTEXT_OFFSET + 53,
+		CTX_GenerateMips = OCULAR_CONTEXT_OFFSET + 54,
+		CTX_SetResourceMinLOD = OCULAR_CONTEXT_OFFSET + 55,
+		CTX_GetResourceMinLOD = OCULAR_CONTEXT_OFFSET + 56,
+		CTX_ResolveSubresource = OCULAR_CONTEXT_OFFSET + 57,
+		CTX_ExecuteCommandList = OCULAR_CONTEXT_OFFSET + 58,
+		CTX_HSSetShaderResources = OCULAR_CONTEXT_OFFSET + 59,
+		CTX_HSSetShader = OCULAR_CONTEXT_OFFSET + 60,
+		CTX_HSSetSamplers = OCULAR_CONTEXT_OFFSET + 61,
+		CTX_HSSetConstantBuffers = OCULAR_CONTEXT_OFFSET + 62,
+		CTX_DSSetShaderResources = OCULAR_CONTEXT_OFFSET + 63,
+		CTX_DSSetShader = OCULAR_CONTEXT_OFFSET + 64,
+		CTX_DSSetSamplers = OCULAR_CONTEXT_OFFSET + 65,
+		CTX_DSSetConstantBuffers = OCULAR_CONTEXT_OFFSET + 66,
+		CTX_CSSetShaderResources = OCULAR_CONTEXT_OFFSET + 67,
+		CTX_CSSetUnorderedAccessViews = OCULAR_CONTEXT_OFFSET + 68,
+		CTX_CSSetShader = OCULAR_CONTEXT_OFFSET + 69,
+		CTX_CSSetSamplers = OCULAR_CONTEXT_OFFSET + 70,
+		CTX_CSSetConstantBuffers = OCULAR_CONTEXT_OFFSET + 71,
+		CTX_VSGetConstantBuffers = OCULAR_CONTEXT_OFFSET + 72,
+		CTX_PSGetShaderResources = OCULAR_CONTEXT_OFFSET + 73,
+		CTX_PSGetShader = OCULAR_CONTEXT_OFFSET + 74,
+		CTX_PSGetSamplers = OCULAR_CONTEXT_OFFSET + 75,
+		CTX_VSGetShader = OCULAR_CONTEXT_OFFSET + 76,
+		CTX_PSGetConstantBuffers = OCULAR_CONTEXT_OFFSET + 77,
+		CTX_IAGetInputLayout = OCULAR_CONTEXT_OFFSET + 78,
+		CTX_IAGetVertexBuffers = OCULAR_CONTEXT_OFFSET + 79,
+		CTX_IAGetIndexBuffer = OCULAR_CONTEXT_OFFSET + 80,
+		CTX_GSGetConstantBuffers = OCULAR_CONTEXT_OFFSET + 81,
+		CTX_GSGetShader = OCULAR_CONTEXT_OFFSET + 82,
+		CTX_IAGetPrimitiveTopology = OCULAR_CONTEXT_OFFSET + 83,
+		CTX_VSGetShaderResources = OCULAR_CONTEXT_OFFSET + 84,
+		CTX_VSGetSamplers = OCULAR_CONTEXT_OFFSET + 85,
+		CTX_GetPredication = OCULAR_CONTEXT_OFFSET + 86,
+		CTX_GSGetShaderResources = OCULAR_CONTEXT_OFFSET + 87,
+		CTX_GSGetSamplers = OCULAR_CONTEXT_OFFSET + 88,
+		CTX_OMGetRenderTargets = OCULAR_CONTEXT_OFFSET + 89,
+		CTX_OMGetRenderTargetsAndUnorderedAccessViews = OCULAR_CONTEXT_OFFSET + 90,
+		CTX_OMGetBlendState = OCULAR_CONTEXT_OFFSET + 91,
+		CTX_OMGetDepthStencilState = OCULAR_CONTEXT_OFFSET + 92,
+		CTX_SOGetTargets = OCULAR_CONTEXT_OFFSET + 93,
+		CTX_RSGetState = OCULAR_CONTEXT_OFFSET + 94,
+		CTX_RSGetViewports = OCULAR_CONTEXT_OFFSET + 95,
+		CTX_RSGetScissorRects = OCULAR_CONTEXT_OFFSET + 96,
+		CTX_HSGetShaderResources = OCULAR_CONTEXT_OFFSET + 97,
+		CTX_HSGetShader = OCULAR_CONTEXT_OFFSET + 98,
+		CTX_HSGetSamplers = OCULAR_CONTEXT_OFFSET + 99,
+		CTX_HSGetConstantBuffers = OCULAR_CONTEXT_OFFSET + 100,
+		CTX_DSGetShaderResources = OCULAR_CONTEXT_OFFSET + 101,
+		CTX_DSGetShader = OCULAR_CONTEXT_OFFSET + 102,
+		CTX_DSGetSamplers = OCULAR_CONTEXT_OFFSET + 103,
+		CTX_DSGetConstantBuffers = OCULAR_CONTEXT_OFFSET + 104,
+		CTX_CSGetShaderResources = OCULAR_CONTEXT_OFFSET + 105,
+		CTX_CSGetUnorderedAccessViews = OCULAR_CONTEXT_OFFSET + 106,
+		CTX_CSGetShader = OCULAR_CONTEXT_OFFSET + 107,
+		CTX_CSGetSamplers = OCULAR_CONTEXT_OFFSET + 108,
+		CTX_CSGetConstantBuffers = OCULAR_CONTEXT_OFFSET + 109,
+		CTX_ClearState = OCULAR_CONTEXT_OFFSET + 110,
+		CTX_Flush = OCULAR_CONTEXT_OFFSET + 111,
+		CTX_GetType = OCULAR_CONTEXT_OFFSET + 112,
+		CTX_GetContextFlags = OCULAR_CONTEXT_OFFSET + 113,
+		CTX_FinishCommandList = OCULAR_CONTEXT_OFFSET + 114,
+
+		// Context1 (ID3D11DeviceContext1)
+		CTX_CopySubresourceRegion1 = OCULAR_CONTEXT_OFFSET + 115,
+		CTX_UpdateSubresource1 = OCULAR_CONTEXT_OFFSET + 116,
+		CTX_DiscardResource = OCULAR_CONTEXT_OFFSET + 117,
+		CTX_DiscardView = OCULAR_CONTEXT_OFFSET + 118,
+		CTX_VSSetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 119,
+		CTX_HSSetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 120,
+		CTX_DSSetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 121,
+		CTX_GSSetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 122,
+		CTX_PSSetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 123,
+		CTX_CSSetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 124,
+		CTX_VSGetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 125,
+		CTX_HSGetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 126,
+		CTX_DSGetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 127,
+		CTX_GSGetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 128,
+		CTX_PSGetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 129,
+		CTX_CSGetConstantBuffers1 = OCULAR_CONTEXT_OFFSET + 130,
+		CTX_SwapDeviceContextState = OCULAR_CONTEXT_OFFSET + 131,
+		CTX_ClearView = OCULAR_CONTEXT_OFFSET + 132,
+		CTX_DiscardView1 = OCULAR_CONTEXT_OFFSET + 133,
+
+		// Context2 (ID3D11DeviceContext2)
+		CTX_UpdateTileMappings = OCULAR_CONTEXT_OFFSET + 134,
+		CTX_CopyTileMappings = OCULAR_CONTEXT_OFFSET + 135,
+		CTX_CopyTiles = OCULAR_CONTEXT_OFFSET + 136,
+		CTX_UpdateTiles = OCULAR_CONTEXT_OFFSET + 137,
+		CTX_ResizeTilePool = OCULAR_CONTEXT_OFFSET + 138,
+		CTX_TiledResourceBarrier = OCULAR_CONTEXT_OFFSET + 139,
+		CTX_IsAnnotationEnabled = OCULAR_CONTEXT_OFFSET + 140,
+		CTX_SetMarkerInt = OCULAR_CONTEXT_OFFSET + 141,
+		CTX_BeginEventInt = OCULAR_CONTEXT_OFFSET + 142,
+		CTX_EndEvent = OCULAR_CONTEXT_OFFSET + 143,
+
+		// Context3 (ID3D11DeviceContext3)
+		CTX_Flush1 = OCULAR_CONTEXT_OFFSET + 144,
+		CTX_SetHardwareProtectionState = OCULAR_CONTEXT_OFFSET + 145,
+		CTX_GetHardwareProtectionState = OCULAR_CONTEXT_OFFSET + 146
 	};
 
 	extern std::unordered_map<VMT, void*> oMethods;
+
+	// Helper function to cast original method pointers to the correct type
+	template<typename T>
+	inline T GetOriginal(VMT method) {
+		return reinterpret_cast<T>(oMethods[method]);
+	}
 
 	void Init();
 	bool CreateHook(void* function, VMT method);

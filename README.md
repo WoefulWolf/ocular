@@ -24,15 +24,15 @@ A Simple DX11 Hooking Library using <a href="https://github.com/microsoft/Detour
 HRESULT hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
   printf("Present called!\n");
-  // We return the result of the original method.
-  // Here we are casting the original method pointer to the appropriate type so that we can pass the parameters.
-  return ((ocular::SwapChain::PRESENT)ocular::oMethods[ocular::VMT::Present])(pSwapChain, SyncInterval, Flags);
+  // We return the result of the original method using the GetOriginal helper.
+  return ocular::GetOriginal<HRESULT(__stdcall*)(IDXGISwapChain*, UINT, UINT)>(ocular::VMT::SC_Present)
+    (pSwapChain, SyncInterval, Flags);
 }
 
 DWORD WINAPI MainThread(LPVOID lpReserved)
 {
   ocular::Init(); // Run Init before creating any hooks.
-  ocular::CreateHook(hkPresent, ocular::VMT::Present);
+  ocular::CreateHook(hkPresent, ocular::VMT::SC_Present);
   return TRUE;
 }
 

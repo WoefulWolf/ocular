@@ -3,6 +3,8 @@
 #pragma comment(lib, "d3d11.lib")
 
 namespace ocular {
+	constexpr int MAX_INIT_RETRIES = 100;
+
 	void** swapChain_VTable;
 	void** device_VTable;
 	void** context_VTable;
@@ -21,12 +23,13 @@ namespace ocular {
 		sd.Windowed = TRUE;
 		sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
-		IDXGISwapChain* swap;
-		ID3D11Device* device;
-		ID3D11DeviceContext* context;
+		IDXGISwapChain* swap = nullptr;
+		ID3D11Device* device = nullptr;
+		ID3D11DeviceContext* context = nullptr;
 
 		HRESULT res = S_FALSE;
-		while (res != S_OK) {
+		int retries = 0;
+		while (res != S_OK && retries < MAX_INIT_RETRIES) {
 			res = D3D11CreateDeviceAndSwapChain(
 				NULL,
 				D3D_DRIVER_TYPE_HARDWARE,
@@ -41,26 +44,37 @@ namespace ocular {
 				nullptr,
 				&context
 			);
+			retries++;
+		}
+
+		if (res != S_OK) {
+			// Failed to initialize after MAX_INIT_RETRIES attempts
+			return;
 		}
 
 		swapChain_VTable = *reinterpret_cast<void***>(swap);
 		device_VTable = *reinterpret_cast<void***>(device);
 		context_VTable = *reinterpret_cast<void***>(context);
+
+		// Clean up temporary D3D objects
+		swap->Release();
+		device->Release();
+		context->Release();
 	}
 
 	void* ResolveFromMethod(VMT method) {
 		int methodVal = static_cast<int>(method);
 
 		// SwapChain
-		if (methodVal < 0x100)
+		if (methodVal < OCULAR_DEVICE_OFFSET)
 			return swapChain_VTable[methodVal];
 
 		// Device
-		if (methodVal < 0x200)
-			return device_VTable[methodVal - 0x100];
+		if (methodVal < OCULAR_CONTEXT_OFFSET)
+			return device_VTable[methodVal - OCULAR_DEVICE_OFFSET];
 
 		// Context
-		return context_VTable[methodVal - 0x200];
+		return context_VTable[methodVal - OCULAR_CONTEXT_OFFSET];
 	}
 
 	bool CreateHook(void* function, VMT method) {
@@ -73,10 +87,6 @@ namespace ocular {
 
 		LONG commitRes = DetourTransactionCommit();
 
-		if (attachRes == NO_ERROR && commitRes == NO_ERROR)
-			return true;
-		else
-			return false;
+		return (attachRes == NO_ERROR && commitRes == NO_ERROR);
 	}
 }
-
